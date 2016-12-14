@@ -1,2 +1,5 @@
+set -x
 docker pull gtfierro/fuseki
-docker run -it --rm --name fuseki -p3030:3030 gtfierro/fuseki
+docker kill fuseki
+docker rm fuseki
+docker run -d --name fuseki -p3031:3030 gtfierro/fuseki
