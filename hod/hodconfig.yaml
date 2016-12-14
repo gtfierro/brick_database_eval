@@ -46,4 +46,4 @@
 #UseIPv6: false
 
 # Whether or not to serve on localhost. If false, serves on a public interface
-#Localhost: true
+Localhost: false

@@ -13,6 +13,6 @@ RUN go get -u github.com/gtfierro/hod
 RUN go install github.com/gtfierro/hod 
 
 ADD entrypoint.sh /bin/
-ADD hodconfig.yaml Brick.ttl BrickFrame.ttl berkeley.ttl /
+ADD Brick.ttl hodconfig.yaml BrickFrame.ttl berkeley.ttl /
 
 ENTRYPOINT [ "/bin/entrypoint.sh" ]
