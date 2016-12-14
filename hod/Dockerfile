@@ -9,8 +9,8 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN mkdir /go
 ENV GOPATH /go
-RUN go get -u github.com/gtfierro/hod 
-RUN go install github.com/gtfierro/hod 
+RUN go get github.com/gtfierro/hod
+RUN go install github.com/gtfierro/hod
 
 ADD entrypoint.sh /bin/
 ADD Brick.ttl hodconfig.yaml BrickFrame.ttl berkeley.ttl /
