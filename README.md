@@ -19,6 +19,12 @@ DBs to evaluate:
     - blog w/ basic directions: http://www.snee.com/bobdc.blog/2014/01/storing-and-querying-rdf-in-ne.html
     - seems to not work any more because the maven repo for openrdf is gone
 
+TODO:
+- [blazegraph](https://www.blazegraph.com/): has [free download](https://www.blazegraph.com/download/):
+    - supports SPARQL/RDF
+- [dgraph](https://github.com/dgraph-io/dgraph):
+    - supports GraphQL. Is probably 'compatible' with SPARQL, but involves rewriting queries
+- [stardog](http://stardog.com/)?
 
 ### Process
 
