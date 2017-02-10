@@ -25,6 +25,8 @@ TODO:
 - [dgraph](https://github.com/dgraph-io/dgraph):
     - supports GraphQL. Is probably 'compatible' with SPARQL, but involves rewriting queries
 - [stardog](http://stardog.com/)?
+- [virtuoso](https://github.com/openlink/virtuoso-opensource)
+- [sesame](https://bitbucket.org/openrdf/sesame/src)
 
 ### Process
 
