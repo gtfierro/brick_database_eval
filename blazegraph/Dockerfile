@@ -2,6 +2,7 @@ FROM ubuntu:xenial
 MAINTAINER Jason Koh <jbkoh@eng.ucsd.edu>
 
 RUN apt-get update && apt-get install -y curl git openjdk-8-jdk
+RUN sysctl -w vm.swappiness=0
 COPY blazegraph.jar .
 #COPY RWStore.properties /opt/
 COPY fullfeature.properties /opt/
