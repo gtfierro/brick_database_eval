@@ -18,10 +18,11 @@ DBs to evaluate:
 - [neo4j/sparql](https://github.com/neo4j-contrib/sparql-plugin):
     - blog w/ basic directions: http://www.snee.com/bobdc.blog/2014/01/storing-and-querying-rdf-in-ne.html
     - seems to not work any more because the maven repo for openrdf is gone
-
-TODO:
 - [blazegraph](https://www.blazegraph.com/): has [free download](https://www.blazegraph.com/download/):
     - supports SPARQL/RDF
+    - Previously called BigData
+
+TODO:
 - [dgraph](https://github.com/dgraph-io/dgraph):
     - supports GraphQL. Is probably 'compatible' with SPARQL, but involves rewriting queries
 - [stardog](http://stardog.com/)?
