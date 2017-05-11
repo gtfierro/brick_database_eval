@@ -106,9 +106,16 @@ docker run -d --name alegrograph -p10035:10035 gtfierro/alegrograph"""
             print(resp, resp.reason)
             return None
         obj = xmltodict.parse(resp.text)
-        return list(map(lambda x: 
-                    tuple(map(lambda y: y['uri'], x['binding'])),
-            obj['sparql']['results']['result']))
+        if obj['sparql']['results'] is None:
+            return []
+        num_vars = len(obj['sparql']['head']['variable'])
+        if num_vars > 1:
+            return list(map(lambda x:
+                        tuple(map(lambda y: y['uri'], x['binding'])),
+                obj['sparql']['results']['result']))
+        else:
+            return list(map(lambda x: tuple([x['binding']['uri']]),
+                obj['sparql']['results']['result']))
 
 class BlazeGraph(object):
     setup = """
@@ -136,7 +143,17 @@ docker run -d --name blazegraph -p9998:9998 jbkoh/blazegraph"""
         if not resp.ok:
             print(resp, resp.reason)
             return None
-        return resp
+        obj = xmltodict.parse(resp.text)
+        if obj['sparql']['results'] is None:
+            return []
+        num_vars = len(obj['sparql']['head']['variable'])
+        if num_vars > 1:
+            return list(map(lambda x:
+                        tuple(map(lambda y: y['uri'], x['binding'])),
+                obj['sparql']['results']['result']))
+        else:
+            return list(map(lambda x: tuple([x['binding']['uri']]),
+                obj['sparql']['results']['result']))
 
 class RDF3X(object):
     setup = """
@@ -193,7 +210,7 @@ docker run -d --name rdflib -p8081:8081 gtfierro/rdflib"""
             print(resp, resp.reason)
             return None
         return list(map(tuple, resp.json()))
-    
+
 
 if __name__ == '__main__':
     hod = HodDB()
