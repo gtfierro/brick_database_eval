@@ -131,10 +131,10 @@ docker run -d --name alegrograph -p10035:10035 gtfierro/alegrograph"""
 
 class BlazeGraph(object):
     setup = """
-docker pull jbkoh/blazegraph
+docker pull gtfierro/blazegraph
 docker kill blazegraph
 docker rm blazegraph
-docker run -d --name blazegraph -p9998:9998 jbkoh/blazegraph"""
+docker run -d --name blazegraph -p9998:9998 gtfierro/blazegraph"""
 
     def __init__(self, server="http://localhost:9998/blazegraph/sparql",init=False):
         """
