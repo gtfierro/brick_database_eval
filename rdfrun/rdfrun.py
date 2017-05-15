@@ -48,6 +48,18 @@ docker run -d --name hod -p47808:47808 gtfierro/hod
                 res.append(row)
         return list(map(tuple, res))
 
+    def querytime(self, qstr, varorder=None):
+        """
+        qstr: query string
+        returns: list of triples
+        """
+        resp = requests.post(self.server, data=qstr)
+        if not resp.ok:
+            print(resp, resp.reason)
+            return []
+        return resp.json().get("Elapsed")
+
+
 class Fuseki(object):
     setup="""
 docker pull gtfierro/fuseki
