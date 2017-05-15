@@ -2,5 +2,5 @@ wget https://github.com/blazegraph/database/releases/download/BLAZEGRAPH_RELEASE
 cp ../Brick.ttl .
 cp ../BrickFrame.ttl .
 cp ../berkeley.ttl .
-docker build -t jbkoh/blazegraph .
-docker push jbkoh/blazegraph
+docker build -t gtfierro/blazegraph .
+docker push gtfierro/blazegraph
