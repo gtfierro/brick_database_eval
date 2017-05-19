@@ -1,0 +1,3 @@
+wrk.method = "POST"
+wrk.body   = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX brick: <http://buildsys.org/ontologies/Brick#> PREFIX bf: <http://buildsys.org/ontologies/BrickFrame#> SELECT DISTINCT ?sensor ?room WHERE {      ?sensor rdf:type/rdfs:subClassOf* brick:Zone_Temperature_Sensor .     ?room rdf:type brick:Room .     ?vav rdf:type brick:VAV .     ?zone rdf:type brick:HVAC_Zone .      ?vav bf:feeds+ ?zone .     ?zone bf:hasPart ?room .      { {?sensor bf:isPointOf ?vav . }     UNION     {?sensor bf:isPointOf ?room . } } };"
+wrk.headers["Content-Type"] = "application/json"
