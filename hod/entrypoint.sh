@@ -1,4 +1,5 @@
 #!/bin/bash
 
-/go/bin/hod load berkeley.ttl
-/go/bin/hod http
+cd /
+/bin/hod load -c /hodconfig.yaml berkeley.ttl
+/bin/hod http -c /hodconfig.yaml
