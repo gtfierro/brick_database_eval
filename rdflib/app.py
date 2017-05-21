@@ -11,65 +11,72 @@ BRICK = rdflib.Namespace('http://buildsys.org/ontologies/Brick#')
 BRICKFRAME = rdflib.Namespace('http://buildsys.org/ontologies/BrickFrame#')
 BRICKTAG = rdflib.Namespace('http://buildsys.org/ontologies/BrickTag#')
 OWL = rdflib.Namespace('http://www.w3.org/2002/07/owl#')
-g = rdflib.Graph()
+g = rdflib.Graph(store="Sleepycat",identifier='datag')
+g.open('./datag', create = True)
 g.bind( 'rdf', RDF)
 g.bind( 'rdfs', RDFS)
 g.bind( 'brick', BRICK)
 g.bind( 'bf', BRICKFRAME)
 g.bind( 'btag', BRICKTAG)
 g.bind( 'owl', OWL)
+pfx = """
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX brick: <http://buildsys.org/ontologies/Brick#>
+PREFIX bf: <http://buildsys.org/ontologies/BrickFrame#>
+"""
 g.parse('../Brick.ttl', format='turtle')
 g.parse('../BrickFrame.ttl', format='turtle')
 g.parse('../berkeley.ttl', format='turtle')
 # ADD INVERSE RELATIONSHIPS
-res = g.query("SELECT ?a ?b WHERE { ?a bf:hasPart ?b .}")
+res = g.query(pfx+"SELECT ?a ?b WHERE { ?a bf:hasPart ?b .}")
 for row in res:
     g.add((row[1], BRICKFRAME.isPartOf, row[0]))
-res = g.query("SELECT ?a ?b WHERE { ?a bf:isPartOf ?b .}")
+res = g.query(pfx+"SELECT ?a ?b WHERE { ?a bf:isPartOf ?b .}")
 for row in res:
     g.add((row[1], BRICKFRAME.hasPart, row[0]))
 
-res = g.query("SELECT ?a ?b WHERE {?a bf:hasPoint ?b .}")
+res = g.query(pfx+"SELECT ?a ?b WHERE {?a bf:hasPoint ?b .}")
 for row in res:
     g.add((row[1], BRICKFRAME.isPointOf, row[0]))
-res = g.query("SELECT ?a ?b WHERE {?a bf:isPointOf ?b .}")
+res = g.query(pfx+"SELECT ?a ?b WHERE {?a bf:isPointOf ?b .}")
 for row in res:
     g.add((row[1], BRICKFRAME.hasPoint, row[0]))
 
-res = g.query("SELECT ?a ?b WHERE {?a bf:feeds ?b .}")
+res = g.query(pfx+"SELECT ?a ?b WHERE {?a bf:feeds ?b .}")
 for row in res:
     g.add((row[1], BRICKFRAME.isFedBy, row[0]))
-res = g.query("SELECT ?a ?b WHERE {?a bf:isFedBy ?b .}")
+res = g.query(pfx+"SELECT ?a ?b WHERE {?a bf:isFedBy ?b .}")
 for row in res:
     g.add((row[1], BRICKFRAME.feeds, row[0]))
 
-res = g.query("SELECT ?a ?b WHERE {?a bf:contains ?b .}")
+res = g.query(pfx+"SELECT ?a ?b WHERE {?a bf:contains ?b .}")
 for row in res:
     g.add((row[1], BRICKFRAME.isLocatedIn, row[0]))
-res = g.query("SELECT ?a ?b WHERE {?a bf:isLocatedIn ?b .}")
+res = g.query(pfx+"SELECT ?a ?b WHERE {?a bf:isLocatedIn ?b .}")
 for row in res:
     g.add((row[1], BRICKFRAME.contains, row[0]))
 
-res = g.query("SELECT ?a ?b WHERE {?a bf:controls ?b .}")
+res = g.query(pfx+"SELECT ?a ?b WHERE {?a bf:controls ?b .}")
 for row in res:
     g.add((row[1], BRICKFRAME.isControlledBy, row[0]))
-res = g.query("SELECT ?a ?b WHERE {?a bf:isControlledBy ?b .}")
+res = g.query(pfx+"SELECT ?a ?b WHERE {?a bf:isControlledBy ?b .}")
 for row in res:
     g.add((row[1], BRICKFRAME.controls, row[0]))
 
-res = g.query("SELECT ?a ?b WHERE {?a bf:hasOutput ?b .}")
+res = g.query(pfx+"SELECT ?a ?b WHERE {?a bf:hasOutput ?b .}")
 for row in res:
     g.add((row[1], BRICKFRAME.isOutputOf, row[0]))
 
-res = g.query("SELECT ?a ?b WHERE {?a bf:hasInput ?b .}")
+res = g.query(pfx+"SELECT ?a ?b WHERE {?a bf:hasInput ?b .}")
 for row in res:
     g.add((row[1], BRICKFRAME.isInputOf, row[0]))
 
-res = g.query("SELECT ?a ?b WHERE {?a bf:hasTagSet ?b .}")
+res = g.query(pfx+"SELECT ?a ?b WHERE {?a bf:hasTagSet ?b .}")
 for row in res:
     g.add((row[1], BRICKFRAME.isTagSetOf, row[0]))
 
-res = g.query("SELECT ?a ?b WHERE {?a bf:hasToken ?b .}")
+res = g.query(pfx+"SELECT ?a ?b WHERE {?a bf:hasToken ?b .}")
 for row in res:
     g.add((row[1], BRICKFRAME.isTokenOf, row[0]))
 
