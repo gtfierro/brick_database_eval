@@ -37,12 +37,12 @@ for queryname in queries.keys():
     hod_vs_blaze = set(hod_res).difference(set(blaze_res))
 
     print('Hod vs RDFLib', len(hod_vs_rdf))
-    if len(hod_vs_rdf) > 0:
-        print(queries[queryname]['sparql'])
+    #if len(hod_vs_rdf) > 0:
+    #    print(queries[queryname]['sparql'])
     #print('Hod vs Fuseki', len(hod_vs_fuseki))
     print('Hod vs Alegro', len(hod_vs_alegro))
-    if len(hod_vs_alegro) > 0:
-        print(queries[queryname]['sparql'])
+    #if len(hod_vs_alegro) > 0:
+    #    print(queries[queryname]['sparql'])
     print('Hod vs Blaze', len(hod_vs_blaze))
-    if len(hod_vs_blaze) > 0:
-        print(queries[queryname]['sparql'])
+    #if len(hod_vs_blaze) > 0:
+    #    print(queries[queryname]['sparql'])
