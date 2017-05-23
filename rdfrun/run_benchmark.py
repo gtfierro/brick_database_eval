@@ -1,12 +1,14 @@
+import sys
 import pandas as pd
 from matplotlib import pyplot as plt
 from rdfrun import *
 from benchmark_queries import *
 import time
+prefix = sys.argv[1] if len(sys.argv) > 1 else ''
 
 init = False
 NUM_RUNS = 200
-TIME_BTWN = .2
+TIME_BTWN = .5
 
 def start():
     init = True
@@ -76,7 +78,7 @@ blaze_data = do_runs(blaze, q['sparql'])
 
 vavdf = pd.DataFrame.from_records({'hod':hod_data,'rdf3x':rdf3x_data, 'rdflib':rdflib_data,'allegro':allegro_data,'blaze':blaze_data,'fuseki':fuseki_data})
 print(vavdf.describe())
-vavdf.to_csv('vavenum.csv',index=False,header=True)
+vavdf.to_csv(prefix+'vavenum.csv',index=False,header=True)
 
 
 # Temp Sensor
@@ -98,7 +100,7 @@ blaze_data = do_runs(blaze, q['sparql'])
 
 tempsensedf = pd.DataFrame.from_records({'hod':hod_data,'rdf3x':rdf3x_data, 'rdflib':rdflib_data,'allegro':allegro_data,'blaze':blaze_data,'fuseki':fuseki_data})
 print(tempsensedf.describe())
-tempsensedf.to_csv('tempsense.csv',index=False,header=True)
+tempsensedf.to_csv(prefix+'tempsense.csv',index=False,header=True)
 
 # AHU Children
 start()
@@ -119,28 +121,7 @@ blaze_data = do_runs(blaze, q['sparql'])
 
 ahuchildren = pd.DataFrame.from_records({'hod':hod_data,'rdf3x':rdf3x_data, 'rdflib':rdflib_data,'allegro':allegro_data,'blaze':blaze_data,'fuseki':fuseki_data})
 print(ahuchildren.describe())
-ahuchildren.to_csv('ahuchildren.csv',index=False,header=True)
-
-# Room Sensors
-start()
-print("##### Room Sensors #####")
-q = benchqueries['RoomSensors']
-print("Run Hod")
-hod_data= do_runs(hod, q['hod'])
-print("Run RDF3X")
-rdf3x_data = do_runs(rdf3x, q['sparql'])
-print("Run RDFLib")
-rdflib_data = do_runs(rdflib, q['sparql'])
-print("Run Fuseki")
-fuseki_data = do_runs(fuseki, q['sparql'])
-print("Run Allegro")
-allegro_data = do_runs(allegro, q['sparql'])
-print("Run Blaze")
-blaze_data = do_runs(blaze, q['sparql'])
-
-roomsensors = pd.DataFrame.from_records({'hod':hod_data,'rdf3x':rdf3x_data, 'rdflib':rdflib_data,'allegro':allegro_data,'blaze':blaze_data,'fuseki':fuseki_data})
-print(roomsensors.describe())
-roomsensors.to_csv('roomsensors.csv',index=False,header=True)
+ahuchildren.to_csv(prefix+'ahuchildren.csv',index=False,header=True)
 
 # Spatial Mapping
 start()
@@ -161,7 +142,7 @@ blaze_data = do_runs(blaze, q['sparql'])
 
 spatialmapping = pd.DataFrame.from_records({'hod':hod_data,'rdf3x':rdf3x_data, 'rdflib':rdflib_data,'allegro':allegro_data,'blaze':blaze_data,'fuseki':fuseki_data})
 print(spatialmapping.describe())
-spatialmapping.to_csv('spatialmapping.csv',index=False,header=True)
+spatialmapping.to_csv(prefix+'spatialmapping.csv',index=False,header=True)
 
 # Sensors in Rooms
 start()
@@ -182,7 +163,7 @@ blaze_data = do_runs(blaze, q['sparql'])
 
 sensorsinrooms = pd.DataFrame.from_records({'hod':hod_data,'rdf3x':rdf3x_data, 'rdflib':rdflib_data,'allegro':allegro_data,'blaze':blaze_data,'fuseki':fuseki_data})
 print(sensorsinrooms.describe())
-sensorsinrooms.to_csv('sensorsinrooms.csv',index=False,header=True)
+sensorsinrooms.to_csv(prefix+'sensorsinrooms.csv',index=False,header=True)
 
 # VAV Relships
 start()
@@ -203,7 +184,7 @@ blaze_data = do_runs(blaze, q['sparql'])
 
 vavrelships = pd.DataFrame.from_records({'hod':hod_data,'rdf3x':rdf3x_data, 'rdflib':rdflib_data,'allegro':allegro_data,'blaze':blaze_data,'fuseki':fuseki_data})
 print(vavrelships.describe())
-vavrelships.to_csv('vavrelships.csv',index=False,header=True)
+vavrelships.to_csv(prefix+'vavrelships.csv',index=False,header=True)
 
 # GreyBox
 start()
@@ -224,4 +205,4 @@ blaze_data = do_runs(blaze, q['sparql'])
 
 greybox = pd.DataFrame.from_records({'hod':hod_data,'rdf3x':rdf3x_data, 'rdflib':rdflib_data,'allegro':allegro_data,'blaze':blaze_data,'fuseki':fuseki_data})
 print(greybox.describe())
-greybox.to_csv('greybox.csv',index=False,header=True)
+greybox.to_csv(prefix+'greybox.csv',index=False,header=True)
