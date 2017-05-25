@@ -1,5 +1,6 @@
 import sys
 import pandas as pd
+import requests
 from matplotlib import pyplot as plt
 from rdfrun import *
 from benchmark_queries import *
@@ -33,11 +34,18 @@ def do_runs(db, query, num=NUM_RUNS):
     runs = []
     for i in range(num):
         t1 = time.time()*1000
-        resp = db.query(query)
-        t2 = time.time()*1000
-        if resp is None: break
-        runs.append(t2-t1)
-        time.sleep(TIME_BTWN)
+        try:
+            resp = db.query(query)
+        except requests.exceptions.Timeout:
+            return [300]*num
+        except Exception as e:
+            print(e)
+            return [300]*num
+        else:
+            t2 = time.time()*1000
+            if resp is None: break
+            runs.append(t2-t1)
+            time.sleep(TIME_BTWN)
     return runs    
 def overlap_hist(df):
     plt.clf()

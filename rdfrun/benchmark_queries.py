@@ -3,8 +3,8 @@ benchqueries = {}
 sparql = """
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX brick: <http://buildsys.org/ontologies/Brick#>
-PREFIX bf: <http://buildsys.org/ontologies/BrickFrame#>
+PREFIX brick: <https://brickschema.org/schema/1.0.1/Brick#>
+PREFIX bf: <https://brickschema.org/schema/1.0.1/BrickFrame#>
 SELECT DISTINCT ?vav WHERE {
     ?vav rdf:type brick:VAV .
 }
@@ -15,12 +15,13 @@ SELECT ?vav WHERE {
 };
 """
 benchqueries['VAVEnum'] = {'sparql': sparql, 'hod': hod}
+benchqueries['VAVEnum']['order'] = ['?vav']
 
 sparql = """
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX brick: <http://buildsys.org/ontologies/Brick#>
-PREFIX bf: <http://buildsys.org/ontologies/BrickFrame#>
+PREFIX brick: <https://brickschema.org/schema/1.0.1/Brick#>
+PREFIX bf: <https://brickschema.org/schema/1.0.1/BrickFrame#>
 SELECT DISTINCT ?sensor WHERE {
     ?sensor rdf:type/rdfs:subClassOf* brick:Zone_Temperature_Sensor .
 }
@@ -31,12 +32,13 @@ SELECT ?sensor WHERE {
 };
 """
 benchqueries['TempSensor'] = {'sparql': sparql, 'hod': hod}
+benchqueries['TempSensor']['order'] = ['?sensor']
 
 sparql = """
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX brick: <http://buildsys.org/ontologies/Brick#>
-PREFIX bf: <http://buildsys.org/ontologies/BrickFrame#>
+PREFIX brick: <https://brickschema.org/schema/1.0.1/Brick#>
+PREFIX bf: <https://brickschema.org/schema/1.0.1/BrickFrame#>
 SELECT DISTINCT ?x WHERE {
     ?ahu rdf:type brick:AHU .
     ?ahu bf:feeds+ ?x .
@@ -49,12 +51,13 @@ SELECT ?x WHERE {
 };
 """
 benchqueries['AHUChildren'] = {'sparql': sparql, 'hod': hod}
+benchqueries['AHUChildren']['order'] = ['?x']
 
 sparql = """
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX brick: <http://buildsys.org/ontologies/Brick#>
-PREFIX bf: <http://buildsys.org/ontologies/BrickFrame#>
+PREFIX brick: <https://brickschema.org/schema/1.0.1/Brick#>
+PREFIX bf: <https://brickschema.org/schema/1.0.1/BrickFrame#>
 SELECT DISTINCT ?floor ?room ?zone WHERE {
     ?floor rdf:type brick:Floor .
     ?room rdf:type brick:Room .
@@ -73,21 +76,22 @@ SELECT ?floor ?room ?zone WHERE {
 };
 """
 benchqueries['SpatialMapping'] = {'sparql': sparql, 'hod': hod}
+benchqueries['SpatialMapping']['order'] = ['?floor','?room','?zone']
 
 sparql = """
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX brick: <http://buildsys.org/ontologies/Brick#>
-PREFIX bf: <http://buildsys.org/ontologies/BrickFrame#>
+PREFIX brick: <https://brickschema.org/schema/1.0.1/Brick#>
+PREFIX bf: <https://brickschema.org/schema/1.0.1/BrickFrame#>
 SELECT DISTINCT ?sensor ?room
 WHERE {
-    { ?sensor rdf:type/rdfs:subClassOf* brick:Zone_Temperature_Sensor . }
+    { ?sensor rdf:type/rdfs:subClassOf* brick:Zone_Temperature_Sensor }
     UNION
-    { ?sensor rdf:type/rdfs:subClassOf* brick:Discharge_Air_Temperature_Sensor . }
+    { ?sensor rdf:type/rdfs:subClassOf* brick:Discharge_Air_Temperature_Sensor }
     UNION
-    { ?sensor rdf:type/rdfs:subClassOf* brick:Occupancy_Sensor . }
+    { ?sensor rdf:type/rdfs:subClassOf* brick:Occupancy_Sensor }
     UNION
-    { ?sensor rdf:type/rdfs:subClassOf* brick:CO2_Sensor . }
+    { ?sensor rdf:type/rdfs:subClassOf* brick:CO2_Sensor }
     ?vav rdf:type brick:VAV .
     ?zone rdf:type brick:HVAC_Zone .
     ?room rdf:type brick:Room .
@@ -123,31 +127,39 @@ WHERE {
 };
 """
 benchqueries['SensorsInRooms'] = {'sparql': sparql, 'hod': hod}
+benchqueries['SensorsInRooms']['order'] = ['?sensor','?room']
 
 sparql = """
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX brick: <http://buildsys.org/ontologies/Brick#>
-PREFIX bf: <http://buildsys.org/ontologies/BrickFrame#>
-SELECT DISTINCT ?vav ?pred ?obj WHERE {
+PREFIX brick: <https://brickschema.org/schema/1.0.1/Brick#>
+PREFIX bf: <https://brickschema.org/schema/1.0.1/BrickFrame#>
+SELECT DISTINCT ?vav ?x ?y ?z ?a WHERE {
     ?vav rdf:type brick:VAV .
-    ?vav ?pred ?obj .
+    ?vav bf:feeds+ ?x .
+    ?vav bf:isFedBy+ ?y .
+    ?vav bf:hasPoint+ ?z .
+    ?vav bf:hasPart+ ?a .
 }
 """
 hod = """
-SELECT ?vav ?pred ?obj WHERE {
+SELECT ?vav ?x ?y ?z ?a WHERE {
     ?vav rdf:type brick:VAV .
-    ?vav ?pred ?obj .
+    ?vav bf:feeds+ ?x .
+    ?vav bf:isFedBy+ ?y .
+    ?vav bf:hasPoint+ ?z .
+    ?vav bf:hasPart+ ?a .
 };
 """
 benchqueries['VAVRelships'] = {'sparql': sparql, 'hod': hod}
+benchqueries['VAVRelships']['order'] = ['?vav','?x','?y','?z','?a']
 
 sparql = """
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX brick: <http://buildsys.org/ontologies/Brick#>
-PREFIX bf: <http://buildsys.org/ontologies/BrickFrame#>
-SELECT DISTINCT ?vav ?room ?temp_uuid ?valve_uuid ?damper_uuid ?setpoint_uuid WHERE {
+PREFIX brick: <https://brickschema.org/schema/1.0.1/Brick#>
+PREFIX bf: <https://brickschema.org/schema/1.0.1/BrickFrame#>
+SELECT DISTINCT ?vav ?room ?temp_uuid ?valve_uuid ?setpoint_uuid WHERE {
     ?vav rdf:type brick:VAV .
     ?vav bf:hasPoint ?tempsensor .
     ?tempsensor rdf:type/rdfs:subClassOf* brick:Temperature_Sensor .
@@ -179,3 +191,4 @@ SELECT ?vav ?room ?temp_uuid ?valve_uuid ?setpoint_uuid WHERE {
 };
 """
 benchqueries['GreyBox'] = {'sparql': sparql, 'hod': hod}
+benchqueries['GreyBox']['order'] = ['?vav','?room','?temp_uuid','?valve_uuid','?setpoint_uuid']
