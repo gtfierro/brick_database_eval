@@ -1,5 +1,7 @@
-BrickFrameTTL: "./BrickFrame.ttl"
-BrickClassTTL: "./Brick.ttl"
+Buildings:
+    bldg: /etc/hod/berkeley.ttl
+BrickFrameTTL: "/BrickFrame.ttl"
+BrickClassTTL: "/Brick.ttl"
 DisableQueryCache: true
 LogLevel: debug
 ListenAddress: 0.0.0.0

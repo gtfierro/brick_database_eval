@@ -1,5 +1,5 @@
 set -x
-docker pull gtfierro/hod
+docker pull gtfierro/paperhod
 docker kill hod
 docker rm hod
-docker run -d --name hod -p47808:47808 gtfierro/hod
+docker run -d --name hod -p47808:47808 gtfierro/paperhod
