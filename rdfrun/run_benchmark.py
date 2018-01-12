@@ -7,9 +7,11 @@ from benchmark_queries import *
 import time
 prefix = sys.argv[1] if len(sys.argv) > 1 else ''
 
+#name = "2"
+
 init = False
 NUM_RUNS = 200
-TIME_BTWN = .5
+TIME_BTWN = .2
 
 def start():
     init = True
@@ -19,6 +21,7 @@ def start():
     fuseki = Fuseki(init=init)
     allegro = AlegroGraph(init=init)
     blaze = BlazeGraph(init=init)
+    virt = Virtuoso(init=init)
     init=False
     time.sleep(30)
 
@@ -28,6 +31,7 @@ rdflib = RDFlib(init=init)
 fuseki = Fuseki(init=init)
 allegro = AlegroGraph(init=init)
 blaze = BlazeGraph(init=init)
+virt = Virtuoso(init=init)
 
 
 def do_runs(db, query, num=NUM_RUNS):
@@ -37,15 +41,18 @@ def do_runs(db, query, num=NUM_RUNS):
         try:
             resp = db.query(query)
         except requests.exceptions.Timeout:
-            return [300]*num
+            return [300000]*num
         except Exception as e:
             print(e)
-            return [300]*num
+            return [300000]*num
         else:
             t2 = time.time()*1000
             if resp is None: break
+            if (t2-t1) > 300000: # 5 min
+                return [300000]*num
             runs.append(t2-t1)
             time.sleep(TIME_BTWN)
+    #print(len(resp))
     return runs    
 def overlap_hist(df):
     plt.clf()
@@ -67,150 +74,166 @@ def overlap_cdf(df,title=''):
     plt.ylabel("Portion of requests")
     plt.title(title)
 
-# VAV Enum
-start()
-print("##### VAV ENUM #####")
-q = benchqueries['VAVEnum']
-print("Run Hod")
-hod_data= do_runs(hod, q['hod'])
-print("Run RDF3X")
-rdf3x_data = do_runs(rdf3x, q['sparql'])
-print("Run RDFLib")
-rdflib_data = do_runs(rdflib, q['sparql'])
-print("Run Fuseki")
-fuseki_data = do_runs(fuseki, q['sparql'])
-print("Run Allegro")
-allegro_data = do_runs(allegro, q['sparql'])
-print("Run Blaze")
-blaze_data = do_runs(blaze, q['sparql'])
+if __name__ == '__main__':
+    # VAV Enum
+    start()
+    print("##### VAV ENUM #####")
+    q = benchqueries['VAVEnum']
+    print("Run Hod")
+    hod_data= do_runs(hod, q['hod'])
+    print("Run RDF3X")
+    rdf3x_data = do_runs(rdf3x, q['sparql'])
+    print("Run RDFLib")
+    rdflib_data = do_runs(rdflib, q['sparql'])
+    print("Run Fuseki")
+    fuseki_data = do_runs(fuseki, q['sparql'])
+    print("Run Allegro")
+    allegro_data = do_runs(allegro, q['sparql'])
+    print("Run Blaze")
+    blaze_data = do_runs(blaze, q['sparql'])
+    print("Run Virtuoso")
+    virt_data = do_runs(virt, q['sparql'])
 
-vavdf = pd.DataFrame.from_records({'hod':hod_data,'rdf3x':rdf3x_data, 'rdflib':rdflib_data,'allegro':allegro_data,'blaze':blaze_data,'fuseki':fuseki_data})
-print(vavdf.describe())
-vavdf.to_csv(prefix+'vavenum.csv',index=False,header=True)
+    vavdf = pd.DataFrame.from_records({'hod':hod_data,'rdf3x':rdf3x_data, 'rdflib':rdflib_data,'allegro':allegro_data,'blaze':blaze_data,'fuseki':fuseki_data,'virtuoso': virt_data})
+    print(vavdf.describe())
+    vavdf.to_csv(prefix+'vavenum.csv',index=False,header=True)
 
 
-# Temp Sensor
-start()
-print("##### Temp Sensor #####")
-q = benchqueries['TempSensor']
-print("Run Hod")
-hod_data= do_runs(hod, q['hod'])
-print("Run RDF3X")
-rdf3x_data = do_runs(rdf3x, q['sparql'])
-print("Run RDFLib")
-rdflib_data = do_runs(rdflib, q['sparql'])
-print("Run Fuseki")
-fuseki_data = do_runs(fuseki, q['sparql'])
-print("Run Allegro")
-allegro_data = do_runs(allegro, q['sparql'])
-print("Run Blaze")
-blaze_data = do_runs(blaze, q['sparql'])
+    # Temp Sensor
+    start()
+    print("##### Temp Sensor #####")
+    q = benchqueries['TempSensor']
+    print("Run Hod")
+    hod_data= do_runs(hod, q['hod'])
+    print("Run RDF3X")
+    rdf3x_data = do_runs(rdf3x, q['sparql'])
+    print("Run RDFLib")
+    rdflib_data = do_runs(rdflib, q['sparql'])
+    print("Run Fuseki")
+    fuseki_data = do_runs(fuseki, q['sparql'])
+    print("Run Allegro")
+    allegro_data = do_runs(allegro, q['sparql'])
+    print("Run Blaze")
+    blaze_data = do_runs(blaze, q['sparql'])
+    print("Run Virtuoso")
+    virt_data = do_runs(virt, q['sparql'])
 
-tempsensedf = pd.DataFrame.from_records({'hod':hod_data,'rdf3x':rdf3x_data, 'rdflib':rdflib_data,'allegro':allegro_data,'blaze':blaze_data,'fuseki':fuseki_data})
-print(tempsensedf.describe())
-tempsensedf.to_csv(prefix+'tempsense.csv',index=False,header=True)
+    tempsensedf = pd.DataFrame.from_records({'hod':hod_data,'rdf3x':rdf3x_data, 'rdflib':rdflib_data,'allegro':allegro_data,'blaze':blaze_data,'fuseki':fuseki_data,'virtuoso': virt_data})
+    print(tempsensedf.describe())
+    tempsensedf.to_csv(prefix+'tempsense.csv',index=False,header=True)
 
-# AHU Children
-start()
-print("##### AHU Children #####")
-q = benchqueries['AHUChildren']
-print("Run Hod")
-hod_data= do_runs(hod, q['hod'])
-print("Run RDF3X")
-rdf3x_data = do_runs(rdf3x, q['sparql'])
-print("Run RDFLib")
-rdflib_data = do_runs(rdflib, q['sparql'])
-print("Run Fuseki")
-fuseki_data = do_runs(fuseki, q['sparql'])
-print("Run Allegro")
-allegro_data = do_runs(allegro, q['sparql'])
-print("Run Blaze")
-blaze_data = do_runs(blaze, q['sparql'])
+    # AHU Children
+    start()
+    print("##### AHU Children #####")
+    q = benchqueries['AHUChildren']
+    print("Run Hod")
+    hod_data= do_runs(hod, q['hod'])
+    print("Run RDF3X")
+    rdf3x_data = do_runs(rdf3x, q['sparql'])
+    print("Run RDFLib")
+    rdflib_data = do_runs(rdflib, q['sparql'])
+    print("Run Fuseki")
+    fuseki_data = do_runs(fuseki, q['sparql'])
+    print("Run Allegro")
+    allegro_data = do_runs(allegro, q['sparql'])
+    print("Run Blaze")
+    blaze_data = do_runs(blaze, q['sparql'])
+    print("Run Virtuoso")
+    virt_data = do_runs(virt, q['sparql'])
 
-ahuchildren = pd.DataFrame.from_records({'hod':hod_data,'rdf3x':rdf3x_data, 'rdflib':rdflib_data,'allegro':allegro_data,'blaze':blaze_data,'fuseki':fuseki_data})
-print(ahuchildren.describe())
-ahuchildren.to_csv(prefix+'ahuchildren.csv',index=False,header=True)
+    ahuchildren = pd.DataFrame.from_records({'hod':hod_data,'rdf3x':rdf3x_data, 'rdflib':rdflib_data,'allegro':allegro_data,'blaze':blaze_data,'fuseki':fuseki_data,'virtuoso': virt_data})
+    print(ahuchildren.describe())
+    ahuchildren.to_csv(prefix+'ahuchildren.csv',index=False,header=True)
 
-# Spatial Mapping
-start()
-print("##### Spatial Mapping #####")
-q = benchqueries['SpatialMapping']
-print("Run Hod")
-hod_data= do_runs(hod, q['hod'])
-print("Run RDF3X")
-rdf3x_data = do_runs(rdf3x, q['sparql'])
-print("Run RDFLib")
-rdflib_data = do_runs(rdflib, q['sparql'])
-print("Run Fuseki")
-fuseki_data = do_runs(fuseki, q['sparql'])
-print("Run Allegro")
-allegro_data = do_runs(allegro, q['sparql'])
-print("Run Blaze")
-blaze_data = do_runs(blaze, q['sparql'])
+    # Spatial Mapping
+    start()
+    print("##### Spatial Mapping #####")
+    q = benchqueries['SpatialMapping']
+    print("Run Hod")
+    hod_data= do_runs(hod, q['hod'])
+    print("Run RDF3X")
+    rdf3x_data = do_runs(rdf3x, q['sparql'])
+    print("Run RDFLib")
+    rdflib_data = do_runs(rdflib, q['sparql'])
+    print("Run Fuseki")
+    fuseki_data = do_runs(fuseki, q['sparql'])
+    print("Run Allegro")
+    allegro_data = do_runs(allegro, q['sparql'])
+    print("Run Blaze")
+    blaze_data = do_runs(blaze, q['sparql'])
+    print("Run Virtuoso")
+    virt_data = do_runs(virt, q['sparql'])
 
-spatialmapping = pd.DataFrame.from_records({'hod':hod_data,'rdf3x':rdf3x_data, 'rdflib':rdflib_data,'allegro':allegro_data,'blaze':blaze_data,'fuseki':fuseki_data})
-print(spatialmapping.describe())
-spatialmapping.to_csv(prefix+'spatialmapping.csv',index=False,header=True)
+    spatialmapping = pd.DataFrame.from_records({'hod':hod_data,'rdf3x':rdf3x_data, 'rdflib':rdflib_data,'allegro':allegro_data,'blaze':blaze_data,'fuseki':fuseki_data,'virtuoso': virt_data})
+    print(spatialmapping.describe())
+    spatialmapping.to_csv(prefix+'spatialmapping.csv',index=False,header=True)
 
-# Sensors in Rooms
-start()
-print("##### Sensors in Rooms #####")
-q = benchqueries['SensorsInRooms']
-print("Run Hod")
-hod_data= do_runs(hod, q['hod'])
-print("Run RDF3X")
-rdf3x_data = do_runs(rdf3x, q['sparql'])
-print("Run RDFLib")
-rdflib_data = do_runs(rdflib, q['sparql'])
-print("Run Fuseki")
-fuseki_data = do_runs(fuseki, q['sparql'])
-print("Run Allegro")
-allegro_data = do_runs(allegro, q['sparql'])
-print("Run Blaze")
-blaze_data = do_runs(blaze, q['sparql'])
+    # Sensors in Rooms
+    start()
+    print("##### Sensors in Rooms #####")
+    q = benchqueries['SensorsInRooms']
+    print("Run Hod")
+    hod_data= do_runs(hod, q['hod'])
+    print("Run RDF3X")
+    rdf3x_data = do_runs(rdf3x, q['sparql'])
+    print("Run RDFLib")
+    rdflib_data = [300000]*NUM_RUNS#do_runs(rdflib, q['sparql'])
+    print("Run Fuseki")
+    #fuseki_data = do_runs(fuseki, q['sparql'])
+    fuseki_data = [300000]*NUM_RUNS#do_runs(rdflib, q['sparql'])
+    print("Run Allegro")
+    allegro_data = do_runs(allegro, q['sparql'])
+    print("Run Blaze")
+    blaze_data = do_runs(blaze, q['sparql'])
+    print("Run Virtuoso")
+    virt_data = do_runs(virt, q['sparql'])
 
-sensorsinrooms = pd.DataFrame.from_records({'hod':hod_data,'rdf3x':rdf3x_data, 'rdflib':rdflib_data,'allegro':allegro_data,'blaze':blaze_data,'fuseki':fuseki_data})
-print(sensorsinrooms.describe())
-sensorsinrooms.to_csv(prefix+'sensorsinrooms.csv',index=False,header=True)
+    sensorsinrooms = pd.DataFrame.from_records({'hod':hod_data,'rdf3x':rdf3x_data, 'rdflib':rdflib_data,'allegro':allegro_data,'blaze':blaze_data,'fuseki':fuseki_data,'virtuoso': virt_data})
+    print(sensorsinrooms.describe())
+    sensorsinrooms.to_csv(prefix+'sensorsinrooms.csv',index=False,header=True)
 
-# VAV Relships
-start()
-print("##### VAV relships #####")
-q = benchqueries['VAVRelships']
-print("Run Hod")
-hod_data= do_runs(hod, q['hod'])
-print("Run RDF3X")
-rdf3x_data = do_runs(rdf3x, q['sparql'])
-print("Run RDFLib")
-rdflib_data = do_runs(rdflib, q['sparql'])
-print("Run Fuseki")
-fuseki_data = do_runs(fuseki, q['sparql'])
-print("Run Allegro")
-allegro_data = do_runs(allegro, q['sparql'])
-print("Run Blaze")
-blaze_data = do_runs(blaze, q['sparql'])
+    # VAV Relships
+    start()
+    print("##### VAV relships #####")
+    q = benchqueries['VAVRelships']
+    print("Run Hod")
+    hod_data= do_runs(hod, q['hod'])
+    print("Run RDF3X")
+    rdf3x_data = do_runs(rdf3x, q['sparql'])
+    print("Run RDFLib")
+    rdflib_data = do_runs(rdflib, q['sparql'])
+    print("Run Fuseki")
+    fuseki_data = do_runs(fuseki, q['sparql'])
+    print("Run Allegro")
+    allegro_data = do_runs(allegro, q['sparql'])
+    print("Run Blaze")
+    blaze_data = do_runs(blaze, q['sparql'])
+    print("Run Virtuoso")
+    virt_data = do_runs(virt, q['sparql'])
 
-vavrelships = pd.DataFrame.from_records({'hod':hod_data,'rdf3x':rdf3x_data, 'rdflib':rdflib_data,'allegro':allegro_data,'blaze':blaze_data,'fuseki':fuseki_data})
-print(vavrelships.describe())
-vavrelships.to_csv(prefix+'vavrelships.csv',index=False,header=True)
+    vavrelships = pd.DataFrame.from_records({'hod':hod_data,'rdf3x':rdf3x_data, 'rdflib':rdflib_data,'allegro':allegro_data,'blaze':blaze_data,'fuseki':fuseki_data,'virtuoso': virt_data})
+    print(vavrelships.describe())
+    vavrelships.to_csv(prefix+'vavrelships.csv',index=False,header=True)
 
-# GreyBox
-start()
-print("##### Grey Box #####")
-q = benchqueries['GreyBox']
-print("Run Hod")
-hod_data= do_runs(hod, q['hod'])
-print("Run RDF3X")
-rdf3x_data = do_runs(rdf3x, q['sparql'])
-print("Run RDFLib")
-rdflib_data = do_runs(rdflib, q['sparql'])
-print("Run Fuseki")
-fuseki_data = do_runs(fuseki, q['sparql'])
-print("Run Allegro")
-allegro_data = do_runs(allegro, q['sparql'])
-print("Run Blaze")
-blaze_data = do_runs(blaze, q['sparql'])
+    # GreyBox
+    start()
+    print("##### Grey Box #####")
+    q = benchqueries['GreyBox']
+    print("Run Hod")
+    hod_data= do_runs(hod, q['hod'])
+    print("Run RDF3X")
+    rdf3x_data = do_runs(rdf3x, q['sparql'])
+    print("Run RDFLib")
+    rdflib_data = [300000]*NUM_RUNS#do_runs(rdflib, q['sparql'])
+    print("Run Fuseki")
+    fuseki_data = do_runs(fuseki, q['sparql'])
+    print("Run Allegro")
+    allegro_data = do_runs(allegro, q['sparql'])
+    print("Run Blaze")
+    blaze_data = do_runs(blaze, q['sparql'])
+    print("Run Virtuoso")
+    virt_data = do_runs(virt, q['sparql'])
 
-greybox = pd.DataFrame.from_records({'hod':hod_data,'rdf3x':rdf3x_data, 'rdflib':rdflib_data,'allegro':allegro_data,'blaze':blaze_data,'fuseki':fuseki_data})
-print(greybox.describe())
-greybox.to_csv(prefix+'greybox.csv',index=False,header=True)
+    greybox = pd.DataFrame.from_records({'hod':hod_data,'rdf3x':rdf3x_data, 'rdflib':rdflib_data,'allegro':allegro_data,'blaze':blaze_data,'fuseki':fuseki_data,'virtuoso': virt_data})
+    print(greybox.describe())
+    greybox.to_csv(prefix+'greybox.csv',index=False,header=True)

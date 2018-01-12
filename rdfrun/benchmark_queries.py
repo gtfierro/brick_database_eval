@@ -105,25 +105,21 @@ WHERE {
 hod = """
 SELECT ?sensor ?room
 WHERE {
-    {
-        { ?sensor rdf:type/rdfs:subClassOf* brick:Zone_Temperature_Sensor . }
-        UNION
-        { ?sensor rdf:type/rdfs:subClassOf* brick:Discharge_Air_Temperature_Sensor . }
-        UNION
-        { ?sensor rdf:type/rdfs:subClassOf* brick:Occupancy_Sensor . }
-        UNION
-        { ?sensor rdf:type/rdfs:subClassOf* brick:CO2_Sensor . }
-    }
+    { ?sensor rdf:type/rdfs:subClassOf* brick:Zone_Temperature_Sensor }
+    UNION
+    { ?sensor rdf:type/rdfs:subClassOf* brick:Discharge_Air_Temperature_Sensor }
+    UNION
+    { ?sensor rdf:type/rdfs:subClassOf* brick:Occupancy_Sensor }
+    UNION
+    { ?sensor rdf:type/rdfs:subClassOf* brick:CO2_Sensor }
     ?vav rdf:type brick:VAV .
     ?zone rdf:type brick:HVAC_Zone .
     ?room rdf:type brick:Room .
     ?vav bf:feeds+ ?zone .
     ?zone bf:hasPart ?room .
-    {
-        {?sensor bf:isPointOf ?vav }
-        UNION
-        {?sensor bf:isLocatedIn ?room }
-    }
+    {?sensor bf:isPointOf ?vav }
+    UNION
+    {?sensor bf:isLocatedIn ?room }
 };
 """
 benchqueries['SensorsInRooms'] = {'sparql': sparql, 'hod': hod}

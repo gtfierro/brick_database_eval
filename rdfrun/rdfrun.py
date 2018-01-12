@@ -9,18 +9,18 @@ from queries import *
 
 class HodDB(object):
     setup="""
-docker pull gtfierro/hod
-docker kill hod
-docker rm hod
-docker run -d --name hod -p47808:47808 gtfierro/hod
+docker pull gtfierro/{name}
+docker kill {name}
+docker rm {name}
+docker run -d --name {name} -p47808:47808 gtfierro/paperhod
 """
-    def __init__(self, server="http://localhost:47808/api/query",init=False):
+    def __init__(self, server="http://localhost:47808/api/query",init=False,name="paperhod"):
         """
         server: HTTP API endpoint
         """
         self.server = server
         if init:
-            for line in self.setup.strip().split('\n'):
+            for line in self.setup.format(name=name).strip().split('\n'):
                 print(line.split(' '))
                 print(subprocess.run(line, shell=True))
 
@@ -29,9 +29,9 @@ docker run -d --name hod -p47808:47808 gtfierro/hod
         qstr: query string
         returns: list of triples
         """
-        resp = requests.post(self.server, data=qstr)
+        resp = requests.post(self.server, data=qstr,timeout=300)
         if not resp.ok:
-            print(resp, resp.reason)
+            print(resp, resp.reason,resp.content)
             return []
         rows = resp.json().get("Rows", [])
         res = []
@@ -53,27 +53,27 @@ docker run -d --name hod -p47808:47808 gtfierro/hod
         qstr: query string
         returns: list of triples
         """
-        resp = requests.post(self.server, data=qstr)
+        resp = requests.post(self.server, data=qstr,timeout=300)
         if not resp.ok:
-            print(resp, resp.reason)
+            print(resp, resp.reason,resp.content)
             return []
         return resp.json().get("Elapsed")
 
 
 class Fuseki(object):
     setup="""
-docker pull gtfierro/fuseki
-docker kill fuseki
-docker rm fuseki
-docker run -d --name fuseki -p3031:3030 gtfierro/fuseki
+docker pull gtfierro/{name}
+docker kill {name}
+docker rm {name}
+docker run -d --name {name} -p3031:3030 gtfierro/fuseki
 """
-    def __init__(self, server="http://localhost:3031/berkeley/query",init=False):
+    def __init__(self, server="http://localhost:3031/berkeley/query",init=False,name="fuseki"):
         """
         server: HTTP API endpoint
         """
         self.server = server
         if init:
-            for line in self.setup.strip().split('\n'):
+            for line in self.setup.format(name=name).strip().split('\n'):
                 print(line.split(' '))
                 print(subprocess.run(line, shell=True))
 
@@ -82,9 +82,9 @@ docker run -d --name fuseki -p3031:3030 gtfierro/fuseki
         qstr: query string
         returns: list of triples
         """
-        resp = requests.post(self.server, params={'query': qstr})
+        resp = requests.post(self.server, params={'query': qstr},timeout=300)
         if not resp.ok:
-            print(resp, resp.reason)
+            print(resp, resp.reason,resp.content)
             return None
         return list(map(
             lambda x: tuple(map(
@@ -92,19 +92,19 @@ docker run -d --name fuseki -p3031:3030 gtfierro/fuseki
 
 class AlegroGraph(object):
     setup = """
-docker pull gtfierro/alegrograph
-docker kill alegrograph
-docker rm alegrograph
-docker run -d --name alegrograph -p10035:10035 gtfierro/alegrograph"""
+docker pull gtfierro/{name}
+docker kill {name}
+docker rm {name}
+docker run -d --name {name} -p10035:10035 gtfierro/alegrograph"""
 
-    def __init__(self, server="http://localhost:10035/repositories/berkeley/sparql", auth=HTTPBasicAuth('root','asdfasdf') ,init=False ):
+    def __init__(self, server="http://localhost:10035/repositories/berkeley/sparql", auth=HTTPBasicAuth('root','asdfasdf') ,init=False, name="alegrograph"):
         """
         server: HTTP API endpoint
         """
         self.server = server
         self.auth = auth
         if init:
-            for line in self.setup.strip().split('\n'):
+            for line in self.setup.format(name=name).strip().split('\n'):
                 print(line.split(' '))
                 print(subprocess.run(line, shell=True))
 
@@ -113,9 +113,9 @@ docker run -d --name alegrograph -p10035:10035 gtfierro/alegrograph"""
         qstr: query string
         returns: list of triples
         """
-        resp = requests.post(self.server, data={'query': qstr}, auth=self.auth)
+        resp = requests.post(self.server, data={'query': qstr}, auth=self.auth,timeout=300)
         if not resp.ok:
-            print(resp, resp.reason)
+            print(resp, resp.reason,resp.content)
             return None
         obj = xmltodict.parse(resp.text)
         if obj['sparql']['results'] is None:
@@ -123,26 +123,26 @@ docker run -d --name alegrograph -p10035:10035 gtfierro/alegrograph"""
         num_vars = len(obj['sparql']['head']['variable'])
         if num_vars > 1:
             return list(map(lambda x:
-                        tuple(map(lambda y: y['uri'], x['binding'])),
+                        tuple(map(lambda y: y['uri'] if 'uri' in y else y['literal'], x['binding'])),
                 obj['sparql']['results']['result']))
         else:
-            return list(map(lambda x: tuple([x['binding']['uri']]),
+            return list(map(lambda x: tuple([x['binding']['uri']]) if 'uri' in x['binding'] else tuple([x['binding']['literal']]),
                 obj['sparql']['results']['result']))
 
 class BlazeGraph(object):
     setup = """
-docker pull gtfierro/blazegraph
-docker kill blazegraph
-docker rm blazegraph
-docker run -d --name blazegraph -p9998:9998 gtfierro/blazegraph"""
+docker pull gtfierro/{name}
+docker kill {name}
+docker rm {name}
+docker run -d --name {name} -p9998:9998 gtfierro/blazegraph"""
 
-    def __init__(self, server="http://localhost:9998/blazegraph/sparql",init=False):
+    def __init__(self, server="http://localhost:9998/blazegraph/sparql",init=False,name="blazegraph"):
         """
         server: HTTP API endpoint
         """
         self.server = server
         if init:
-            for line in self.setup.strip().split('\n'):
+            for line in self.setup.format(name=name).strip().split('\n'):
                 print(line.split(' '))
                 print(subprocess.run(line, shell=True))
 
@@ -151,9 +151,9 @@ docker run -d --name blazegraph -p9998:9998 gtfierro/blazegraph"""
         qstr: query string
         returns: list of triples
         """
-        resp = requests.post(self.server, data={'query': qstr})
+        resp = requests.post(self.server, data={'query': qstr},timeout=300)
         if not resp.ok:
-            print(resp, resp.reason)
+            print(resp, resp.reason,resp.content)
             return None
         obj = xmltodict.parse(resp.text)
         if obj['sparql']['results'] is None:
@@ -161,26 +161,26 @@ docker run -d --name blazegraph -p9998:9998 gtfierro/blazegraph"""
         num_vars = len(obj['sparql']['head']['variable'])
         if num_vars > 1:
             return list(map(lambda x:
-                        tuple(map(lambda y: y['uri'], x['binding'])),
+                        tuple(map(lambda y: y['uri'] if 'uri' in y else y['literal'], x['binding'])),
                 obj['sparql']['results']['result']))
         else:
-            return list(map(lambda x: tuple([x['binding']['uri']]),
+            return list(map(lambda x: tuple([x['binding']['uri']]) if 'uri' in x['binding'] else tuple([x['binding']['literal']]),
                 obj['sparql']['results']['result']))
 
 class RDF3X(object):
     setup = """
-docker pull gtfierro/rdf3x
-docker kill rdf3x
-docker rm rdf3x
-docker run -d --name rdf3x -p8080:8080 gtfierro/rdf3x"""
+docker pull gtfierro/{name}
+docker kill {name}
+docker rm {name}
+docker run -d --name {name} -p8080:8080 gtfierro/rdf3x"""
 
-    def __init__(self, server="http://localhost:8080/bar",init=False):
+    def __init__(self, server="http://localhost:8080/bar",init=False,name="rdf3x"):
         """
         server: HTTP API endpoint
         """
         self.server = server
         if init:
-            for line in self.setup.strip().split('\n'):
+            for line in self.setup.format(name=name).strip().split('\n'):
                 print(line.split(' '))
                 print(subprocess.run(line, shell=True))
 
@@ -189,26 +189,26 @@ docker run -d --name rdf3x -p8080:8080 gtfierro/rdf3x"""
         qstr: query string
         returns: list of triples
         """
-        resp = requests.post(self.server, data=qstr)
+        resp = requests.post(self.server, data=qstr,timeout=300)
         if not resp.ok:
-            print(resp, resp.reason)
+            print(resp, resp.reason,resp.content)
             return None
         return resp
 
 class RDFlib(object):
     setup = """
-docker pull gtfierro/rdflib
-docker kill rdflib
-docker rm rdflib
-docker run -d --name rdflib -p8081:8081 gtfierro/rdflib"""
+docker pull gtfierro/{name}
+docker kill {name}
+docker rm {name}
+docker run -d --name {name} -p8082:8081 gtfierro/rdflib"""
 
-    def __init__(self, server="http://localhost:8081/query",init=False):
+    def __init__(self, server="http://localhost:8082/query",init=False,name="rdflib"):
         """
         server: HTTP API endpoint
         """
         self.server = server
         if init:
-            for line in self.setup.strip().split('\n'):
+            for line in self.setup.format(name=name).strip().split('\n'):
                 print(line.split(' '))
                 print(subprocess.run(line, shell=True))
 
@@ -217,11 +217,51 @@ docker run -d --name rdflib -p8081:8081 gtfierro/rdflib"""
         qstr: query string
         returns: list of triples
         """
-        resp = requests.post(self.server, data={'query': qstr})
+        resp = requests.post(self.server, data={'query': qstr},timeout=300)
         if not resp.ok:
-            print(resp, resp.reason)
+            print(resp, resp.reason,resp.content)
             return None
         return list(map(tuple, resp.json()))
+
+class Virtuoso(object):
+    setup = """
+docker pull gtfierro/{name}
+docker kill {name}
+docker rm {name}
+docker run -d --name {name} -p8890:8890 gtfierro/virtuoso"""
+
+    def __init__(self, server="http://localhost:8890/sparql", auth=HTTPBasicAuth('dba','dba') ,init=False, name="virtuoso"):
+        """
+        server: HTTP API endpoint
+        """
+        self.server = server
+        self.auth = auth
+        if init:
+            for line in self.setup.format(name=name).strip().split('\n'):
+                print(line.split(' '))
+                print(subprocess.run(line, shell=True))
+
+    def query(self, qstr):
+        """
+        qstr: query string
+        returns: list of triples
+        """
+        resp = requests.post(self.server, data={'query': qstr}, auth=self.auth,timeout=300)
+        if not resp.ok:
+            print(resp, resp.reason, resp.content)
+            return None
+        obj = xmltodict.parse(resp.text)
+
+        if obj['sparql']['results'] is None:
+            return []
+        num_vars = len(obj['sparql']['head']['variable'])
+        if num_vars > 1:
+            return list(map(lambda x:
+                        tuple(map(lambda y: y['uri'] if 'uri' in y else y['literal'], x['binding'])),
+                obj['sparql']['results'].get('result',[])))
+        else:
+            return list(map(lambda x: tuple([x['binding']['uri']]) if 'uri' in x['binding'] else tuple([x['binding']['literal']]),
+                obj['sparql']['results'].get('result',[])))
 
 
 if __name__ == '__main__':
